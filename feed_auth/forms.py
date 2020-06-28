@@ -16,4 +16,4 @@ class AuthForm(forms.Form):
             else:
                 self.add_error('api_key', "Looks like the token is invalid, please check it and try again")
         except Exception as e:
-            self.add_error('api_key', "Looks like the token is invalid, please check it and try again")
+            self.add_error('api_key', "Looks like the token is invalid, please check it and try again. %s" % e)
