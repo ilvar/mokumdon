@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 
 from freefeeds.client import Client
 
@@ -16,4 +17,6 @@ class AuthForm(forms.Form):
             else:
                 self.add_error('api_key', "Looks like the token is invalid, please check it and try again")
         except Exception as e:
+            if settings.DEBUG:
+                raise e
             self.add_error('api_key', "Looks like the token is invalid, please check it and try again. %s" % e)
