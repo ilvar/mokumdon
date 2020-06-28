@@ -143,7 +143,7 @@ class Post(models.Model, FfToMdConvertorMixin):
             "media_attachments": [a.to_md_json() for a in self.attachments],
             "mentions": [],
             "tags": [],
-            "application": {"name": "Freefeed"},
+            "application": {"name": "Mokum"},
             "language": "ru", # TODO
             "pinned": False
         }
