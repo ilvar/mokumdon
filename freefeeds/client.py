@@ -47,7 +47,7 @@ class Client:
     def get_me(self):
         data = self.request(self.HOME_URL)
         username = data["river"]["current_user_name"]
-        user_data = [u for u in data["users"] if u["name"] == username][0]
+        user_data = [u for u in data["users"].values() if u["name"] == username][0]
         return User.from_feed_json(user_data)
 
     def get_home(self, limit=120, max_id=None, since_id=None):
@@ -66,16 +66,16 @@ class Client:
         if max_created_at:
             params["start_from"] = max_created_at
         ff_data = self.request(url + "?" + urllib.parse.urlencode(params))
-        posts = [Post.from_feed_json(p, ff_data["users"]) for p in ff_data["entries"]]
+        posts = [Post.from_feed_json(p, ff_data["users"].values()) for p in ff_data["entries"]]
         
         return posts
     
     def get_post(self, md_id):
         md_post = Post.objects.get(pk=md_id)
         ff_data = self.request(self.POSTS_URL % (md_post.user.username, md_post.feed_id))
-        post = Post.from_feed_json(ff_data["entries"], ff_data["users"])
+        post = Post.from_feed_json(ff_data["entries"], ff_data["users"].values())
         
-        comments = [Post.from_feed_comment_json(post, c, ff_data["users"]) for c in ff_data["entries"][0]["comments"]]
+        comments = [Post.from_feed_comment_json(post, c, ff_data["users"].values()) for c in ff_data["entries"][0]["comments"]]
         return [post] + comments
     
     def get_notifications(self):
