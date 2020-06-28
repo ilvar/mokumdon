@@ -72,8 +72,9 @@ class Client:
     
     def get_post(self, md_id):
         md_post = Post.objects.get(pk=md_id)
-        ff_data = self.request(self.POSTS_URL % (md_post.user.username, md_post.feed_id))
-        post = Post.from_feed_json(ff_data["entries"], ff_data["users"].values())
+        url = self.POSTS_URL % (md_post.user.username, md_post.feed_id)
+        ff_data = self.request(url)
+        post = Post.from_feed_json(ff_data["entries"][0], ff_data["users"].values())
         
         comments = [Post.from_feed_comment_json(post, c, ff_data["users"].values()) for c in ff_data["entries"][0]["comments"]]
         return [post] + comments

@@ -102,17 +102,17 @@ class Post(models.Model, FfToMdConvertorMixin):
                 feed_id=ff_comment["id"],
                 parent=parent_post,
                 user=md_user,
-                created_at=Post.dt_from_frf(ff_comment["published_at"])
+                created_at=Post.dt_from_frf(ff_comment["created_at"])
             )
             
         md_post.attachments = []
 
         md_post.data = dict(
-            body=ff_comment["body"],
+            body=ff_comment["text"],
             likes=ff_comment.get("clikes_count", 0),
             comments=0,
             comments_disabled=False,
-            updated_at=Post.dt_from_frf(ff_comment["published_at"]),
+            updated_at=Post.dt_from_frf(ff_comment["created_at"]),
         )
 
         return md_post
