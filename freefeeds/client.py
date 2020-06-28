@@ -46,6 +46,10 @@ class Client:
     
     def get_me(self):
         data = self.request(self.HOME_URL)
+        if settings.DEBUG:
+            print(data.keys())
+            print(data)
+
         username = data["river"]["current_user_name"]
         user_data = [u for u in data["users"] if u["name"] == username][0]
         return User.from_feed_json(user_data)
