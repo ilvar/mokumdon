@@ -1,8 +1,8 @@
-[Feedodon](https://feedodon.rkd.pw/) is a bridge to view Freefeed posts
+[Mokumdon](https://mokumdon.rkd.pw/) is a bridge to view Mokum posts
 from your `<SARCASM>`favourite Mastodon`</SARCASM>` client.
 
-If you just want to use it, enter `feedodon.rkd.pw` as Mastodon instance
-in your client and paste your Freefeed app token into the authorization
+If you just want to use it, enter `mokumdon.rkd.pw` as Mastodon instance
+in your client and paste your Mokum app token into the authorization
 form.
 
 ## Run
@@ -11,8 +11,8 @@ If you don't trust my server you can host this bridge yourself, easiest
 way is Docker of course.
 
 ```
-docker build -t feedodon .
-docker run -p 8000:8000 feedodon
+docker build -t mokumdon .
+docker run -p 8000:8000 mokumdon
 ```
 
 You'll need to run it behind a reverse proxy with SSL because that's
@@ -60,8 +60,8 @@ Reports for iOS, desktop, etc clients welcome!
 
 - Home feed is only sorted by _createdAt_ because Mastodon clients cache
 feed heavily and rely on status ordering for pagination
-- "Reblog" doesn't map onto Freefeed API so it will always fail
-- Public timeline doesn't map onto Freefeed API so it will always fail
+- "Reblog" doesn't map onto Mokum API so it will always fail
+- Public timeline doesn't map onto Mokum API so it will always fail
 
 ## TODO
 
