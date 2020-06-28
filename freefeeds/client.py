@@ -1,6 +1,7 @@
 import urllib.parse
 
 import requests
+from django.conf import settings
 
 from freefeeds.models import User, Post, Attachment
 
@@ -38,6 +39,8 @@ class Client:
         }
     
     def request(self, url, method="GET", data=None, **kwargs):
+        if settings.DEBUG:
+            print(method + ": " + url)
         result = requests.request(method, url, headers=self.get_headers(), json=data, **kwargs).json()
         return result
     
