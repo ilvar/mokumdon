@@ -179,8 +179,8 @@ class Attachment(models.Model, FfToMdConvertorMixin):
             "id": self.pk,
             "type": self.data["media_type"],
             "url": self.data["url"],
-            "remote_url": self.data["url"],
-            "preview_url": self.data["thumbnail_url"],
+            "remote_url": "https://mokum.place" + self.data["url"],
+            "preview_url": "https://mokum.place" + self.data["thumbnail_url"],
             "text_url": "",
             "meta": (self.data["width"] and self.data["height"]) and{
               "width": self.data["width"],
