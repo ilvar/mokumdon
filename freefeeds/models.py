@@ -175,6 +175,8 @@ class Attachment(models.Model, FfToMdConvertorMixin):
         return att
     
     def to_md_json(self):
+        print("Remote: %s" % self.data["url"])
+        print("Preview: %s" % self.data["thumbnail_url"])
         return {
             "id": self.pk,
             "type": self.data["media_type"],

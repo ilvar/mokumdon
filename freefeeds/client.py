@@ -21,7 +21,7 @@ class Client:
 
     ME_URL = HOST + "/index.json"
 
-    POST_LIKE_URL = HOST + "v1/posts/%s/%s/favs.json"
+    POST_LIKE_URL = HOST + "api/v1/posts/%s/%s/likes.json"
     COMMENT_LIKE_URL = HOST + "api/v1/posts/%s/%s/clike/%s.json"
 
     def __init__(self, app_key):
@@ -91,21 +91,21 @@ class Client:
         post = Post.objects.get(pk=md_id)
     
         if post.parent is not None:
-            self.request(self.COMMENT_LIKE_URL % post.feed_id, method="POST")
+            self.request(self.COMMENT_LIKE_URL % (post.user.username, post.feed_id, post.id), method="POST")
             comments = self.get_post(post.parent_id)[1:]
             comment = [p for p in comments if p.id == md_id][0]
             return comment
         else:
-            self.request(self.POST_LIKE_URL % post.feed_id, method="POST")
+            self.request(self.POST_LIKE_URL % (post.user.username, post.feed_id), method="POST")
             return self.get_post(md_id)[0]
 
     def post_unlike(self, md_id):
         post = Post.objects.get(pk=md_id)
     
         if post.parent is not None:
-            self.request(self.COMMENT_UNLIKE_URL % post.feed_id, method="POST")
+            self.request(self.COMMENT_LIKE_URL % (post.user.username, post.feed_id, post.id), method="DELETE")
         else:
-            self.request(self.POST_UNLIKE_URL % post.feed_id, method="POST")
+            self.request(self.POST_LIKE_URL % (post.user.username, post.feed_id), method="DELETE")
         return self.get_post(md_id)[0]
 
     def new_post_or_comment(self, md_data):
