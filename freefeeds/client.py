@@ -21,8 +21,8 @@ class Client:
 
     ME_URL = HOST + "/index.json"
 
-    POST_LIKE_URL = HOST + "api/v1/posts/%s/%s/likes.json"
-    COMMENT_LIKE_URL = HOST + "api/v1/posts/%s/%s/clike/%s.json"
+    POST_LIKE_URL = HOST + "/api/v1/posts/%s/%s/likes.json"
+    COMMENT_LIKE_URL = HOST + "/api/v1/posts/%s/%s/clike/%s.json"
 
     def __init__(self, app_key):
         if not app_key:

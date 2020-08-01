@@ -172,11 +172,15 @@ class Attachment(models.Model, FfToMdConvertorMixin):
             width=ff_attachment["original_width"],
             height=ff_attachment["original_height"]
         )
+        print("FEED Remote: %s" % ff_attachment["original_url"])
+        print("FEED Preview: %s" % ff_attachment["thumb_url"])
+        print("FEED All: %s" % ff_attachment)
         return att
     
     def to_md_json(self):
-        print("Remote: %s" % self.data["url"])
-        print("Preview: %s" % self.data["thumbnail_url"])
+        print("MD Remote: %s" % self.data["url"])
+        print("MD Preview: %s" % self.data["thumbnail_url"])
+        print("MD All: %s" % self.data)
         return {
             "id": self.pk,
             "type": self.data["media_type"],
