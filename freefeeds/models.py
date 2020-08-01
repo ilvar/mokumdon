@@ -167,26 +167,20 @@ class Attachment(models.Model, FfToMdConvertorMixin):
             
         att.data = dict(
             media_type="image",
-            url=ff_attachment["original_url"],
-            thumbnail_url=ff_attachment["thumb_url"],
+            url=ff_attachment["stage1_image_url"],
+            thumbnail_url="https://mokum.place" + ff_attachment["thumb_url"],
             width=ff_attachment["original_width"],
             height=ff_attachment["original_height"]
         )
-        print("FEED Remote: %s" % ff_attachment["original_url"])
-        print("FEED Preview: %s" % ff_attachment["thumb_url"])
-        print("FEED All: %s" % ff_attachment)
         return att
     
     def to_md_json(self):
-        print("MD Remote: %s" % self.data["url"])
-        print("MD Preview: %s" % self.data["thumbnail_url"])
-        print("MD All: %s" % self.data)
         return {
             "id": self.pk,
             "type": self.data["media_type"],
             "url": self.data["url"],
-            "remote_url": "https://mokum.place" + self.data["url"],
-            "preview_url": "https://mokum.place" + self.data["thumbnail_url"],
+            "remote_url": self.data["url"],
+            "preview_url": self.data["thumbnail_url"],
             "text_url": "",
             "meta": (self.data["width"] and self.data["height"]) and{
               "width": self.data["width"],
