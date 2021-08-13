@@ -167,7 +167,7 @@ class Attachment(models.Model, FfToMdConvertorMixin):
             
         att.data = dict(
             media_type="image",
-            url=ff_attachment["stage1_image_url"],
+            url="https://mokum.place" + ff_attachment["medium_url"],
             thumbnail_url="https://mokum.place" + ff_attachment["thumb_url"],
             width=ff_attachment["original_width"],
             height=ff_attachment["original_height"]
