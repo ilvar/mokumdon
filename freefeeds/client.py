@@ -15,9 +15,9 @@ class Client:
     USER_FEED_URL = HOST + "/%s.json"
     POSTS_URL = HOST + "/%s/%s.json"
 
-    NEW_POST_URL = HOST + "api/v1/posts.json"
-    NEW_COMMENT_URL = HOST + "api/v1/posts/%s/%s/comments.json"
-    NEW_ATTACHMENT_URL = HOST + "v1/attachments"
+    NEW_POST_URL = HOST + "/api/v1/posts.json"
+    NEW_COMMENT_URL = HOST + "/api/v1/posts/%s/%s/comments.json"
+    NEW_ATTACHMENT_URL = HOST + "/v1/attachments"
 
     ME_URL = HOST + "/index.json"
 
@@ -115,27 +115,28 @@ class Client:
             
             if post.parent:
                 postId = post.parent.feed_id
+                username  = post.parent.user.username
             else:
                 postId = post.feed_id
+                username  = post.user.username
                 
             feed_data = {
                 "comment": {
-                    "body": md_data["status"] or '.',
-                    "postId": postId
+                    "text": md_data["status"] or '.',
+                    "attachment_id": [Attachment.objects.get(pk=aid).feed_id for aid in md_data.getlist("media_ids[]")][0],
                 }
             }
 
-            new_comment = self.request(self.NEW_COMMENT_URL, method="POST", data=feed_data)
+            new_comment = self.request(self.NEW_COMMENT_URL % (username, postId), method="POST", data=feed_data)
             new_md_post = Post.from_feed_comment_json(post, new_comment["comments"], new_comment["users"])
         else:
             feed_data = {
                 "post": {
-                    "body": md_data["status"] or '.',
-                    "attachments": [Attachment.objects.get(pk=aid).feed_id for aid in md_data.getlist("media_ids[]")]
-                },
-                "meta": {
-                    "commentsDisabled": False,
-                    "feeds": [self.get_me().username]
+                    "text": md_data["status"] or '.',
+                    "attachment_ids": [Attachment.objects.get(pk=aid).feed_id for aid in md_data.getlist("media_ids[]")],
+                    "linebreaks": True,
+                    "timelines": ["user"],
+                    "comments_disabled": False,
                 }
             }
     
