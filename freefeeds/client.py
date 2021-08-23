@@ -127,8 +127,8 @@ class Client:
                 }
             }
 
-            new_comment = self.request(self.NEW_COMMENT_URL % (username, postId), method="POST", data=feed_data)
-            new_md_post = Post.from_feed_comment_json(post, new_comment["comments"], new_comment["users"])
+            new_comment = self.request(self.NEW_COMMENT_URL % (username, postId), method="POST", data=feed_data)["entries"][0]
+            new_md_post = Post.from_feed_comment_json(post, new_comment["post"], [self.get_me().feed_id])
         else:
             feed_data = {
                 "post": {
@@ -140,8 +140,8 @@ class Client:
                 }
             }
     
-            new_post = self.request(self.NEW_POST_URL, method="POST", data=feed_data)
-            new_md_post = Post.from_feed_json(new_post["posts"], new_post["users"])
+            new_post = self.request(self.NEW_POST_URL, method="POST", data=feed_data)["entries"][0]
+            new_md_post = Post.from_feed_json(new_post["post"], [self.get_me().feed_id])
         
         return new_md_post
     
