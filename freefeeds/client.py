@@ -108,9 +108,6 @@ class Client:
             self.request(self.POST_LIKE_URL % (post.user.username, post.feed_id), method="DELETE")
         return self.get_post(md_id)[0]
 
-    def _get_post_from_create_response(self, response):
-        return list(response["entries"].values())[0]
-
     def new_post_or_comment(self, md_data):
         reply_id = md_data.get("in_reply_to_id", None)
         if reply_id is not None:
@@ -130,7 +127,7 @@ class Client:
                 }
             }
 
-            new_comment = self._get_post_from_create_response(self.request(self.NEW_COMMENT_URL % (username, postId), method="POST", data=feed_data))
+            new_comment = self.request(self.NEW_COMMENT_URL % (username, postId), method="POST", data=feed_data)
             user_id = self.get_me().feed_id
             new_comment["post"]["user_id"] = user_id
             new_md_post = Post.from_feed_comment_json(post, new_comment["post"], [{"id": user_id}])
@@ -145,7 +142,7 @@ class Client:
                 }
             }
     
-            new_post = self._get_post_from_create_response(self.request(self.NEW_POST_URL, method="POST", data=feed_data))
+            new_post = self.request(self.NEW_POST_URL, method="POST", data=feed_data)
             user_id = self.get_me().feed_id
             new_post["post"]["user_id"] = user_id
             new_md_post = Post.from_feed_json(new_post["post"], [{"id": user_id}])

@@ -18,23 +18,19 @@ class PostTestCase(TestCase):
                 lambda l: True
             ],
             json={
-                "entries": {
-                    "{river_uuid}": {
-                        "post": {
-                            "id": 0,
-                            "text": "FOO",
-                            "published_at": "2018-10-27",
-                            "timelines": ["user"],
-                            "comments_disabled": False,
-                            "linebeaks": False,
-                            "can_comment": False,
-                            "attachments": [],
-                            "comments_count": 0,
-                            "likes": [],
-                            "more_likes": 0,
-                            "my_change": True
-                        }
-                    }
+                "post": {
+                    "id": 0,
+                    "text": "FOO",
+                    "published_at": "2018-10-27",
+                    "timelines": ["user"],
+                    "comments_disabled": False,
+                    "linebeaks": False,
+                    "can_comment": False,
+                    "attachments": [],
+                    "comments_count": 0,
+                    "likes": [],
+                    "more_likes": 0,
+                    "my_change": True
                 }
             }, status=200
         )
