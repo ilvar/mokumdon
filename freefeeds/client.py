@@ -130,6 +130,8 @@ class Client:
             new_comment = self.request(self.NEW_COMMENT_URL % (username, postId), method="POST", data=feed_data)
             user_id = self.get_me().feed_id
             new_comment["post"]["user_id"] = user_id
+            new_comment["post"].setdefault("likes", [])
+            new_comment["post"].setdefault("more_likes", 0)
             new_md_post = Post.from_feed_comment_json(post, new_comment["post"], [{"id": user_id}])
         else:
             feed_data = {
@@ -145,6 +147,8 @@ class Client:
             new_post = self.request(self.NEW_POST_URL, method="POST", data=feed_data)
             user_id = self.get_me().feed_id
             new_post["post"]["user_id"] = user_id
+            new_post["post"].setdefault("likes", [])
+            new_post["post"].setdefault("more_likes", 0)
             new_md_post = Post.from_feed_json(new_post["post"], [{"id": user_id}])
         
         return new_md_post
