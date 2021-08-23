@@ -100,14 +100,13 @@ class Post(models.Model, FfToMdConvertorMixin):
             md_post = Post.objects.get(feed_id=ff_comment["id"])
         except Post.DoesNotExist:
             ff_user = [u for u in all_ff_users if u["id"] == ff_comment["user_id"]][0]
-            print(ff_user)
             md_user = User.from_feed_json(ff_user)
             md_post = Post.objects.create(
                 feed_id=ff_comment["id"],
                 parent=parent_post,
                 user=md_user,
                 created_at=Post.dt_from_frf(
-                    ff_comment.get("created_at", ff_comment["published_at"])
+                    ff_comment.get("created_at", ff_comment.get("published_at"))
                 ),
             )
 
@@ -119,7 +118,7 @@ class Post(models.Model, FfToMdConvertorMixin):
             comments=0,
             comments_disabled=False,
             updated_at=Post.dt_from_frf(
-                ff_comment.get("created_at", ff_comment["published_at"])
+                ff_comment.get("created_at", ff_comment.get("published_at"))
             ),
         )
 

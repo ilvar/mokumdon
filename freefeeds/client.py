@@ -159,12 +159,13 @@ class Client:
             }
 
             user_id = self.get_me().feed_id
-            new_comment = self._get_post_from_response(
-                self.request(
+            response = self.request(
                     self.NEW_COMMENT_URL % (username, postId),
                     method="POST",
                     data=feed_data,
-                ),
+                )
+            new_comment = self._get_post_from_response(
+                {"post": response},
                 user_id,
             )
             new_md_post = Post.from_feed_comment_json(
@@ -186,7 +187,7 @@ class Client:
 
             user_id = self.get_me().feed_id
             response = self.request(self.NEW_POST_URL, method="POST", data=feed_data)
-            new_post = self._get_post_from_response({"post": response}, user_id)
+            new_post = self._get_post_from_response(response, user_id)
             new_md_post = Post.from_feed_json(new_post["post"], [{"id": user_id}])
 
         return new_md_post

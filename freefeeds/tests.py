@@ -11,11 +11,11 @@ from .models import Post, User
 class PostTestCase(TestCase):
     def setUp(self) -> None:
         self.client = Client(HTTP_AUTHORIZATION="Bearer test")
-        responses.reset()
         return super().setUp()
 
     @responses.activate
     def test_create_post(self):
+        responses.reset()
         responses.add(
             responses.POST,
             "https://mokum.place/api/v1/posts.json",
@@ -64,6 +64,7 @@ class PostTestCase(TestCase):
 
     @responses.activate
     def test_create_comment(self):
+        responses.reset()
         u = User.objects.create(
             feed_id=1,
             username="tester",
