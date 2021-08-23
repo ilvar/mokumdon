@@ -111,6 +111,7 @@ class Client:
     def _get_post_from_response(self, response, user_id):
         response["post"]["user_id"] = user_id
         response["post"].setdefault("likes", [])
+        response["post"].setdefault("attachments", [])
         response["post"].setdefault("more_likes", 0)
         response["post"].setdefault("comments_count", 0)
         return response
@@ -150,13 +151,6 @@ class Client:
     
             user_id = self.get_me().feed_id
             new_post = self._get_post_from_response(self.request(self.NEW_POST_URL, method="POST", data=feed_data), user_id)
-            user_id = self.get_me().feed_id
-            new_post["post"]["user_id"] = user_id
-            new_post["post"].setdefault("likes", [])
-            new_post["post"].setdefault("more_likes", 0)
-            new_post["post"].setdefault("comments_count", 0)
-            new_post["post"].setdefault("can_comment", True)
-
             new_md_post = Post.from_feed_json(new_post["post"], [{"id": user_id}])
         
         return new_md_post
