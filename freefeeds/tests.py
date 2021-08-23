@@ -77,20 +77,15 @@ class PostTestCase(TestCase):
             "https://mokum.place/api/v1/posts/tester/1/comments.json",
             match=[lambda l: True],
             json={
-                "post": {
-                    "id": 0,
-                    "text": "FOO",
-                    "published_at": "2018-10-27",
-                    "timelines": ["user"],
-                    "comments_disabled": False,
-                    "linebeaks": False,
-                    "can_comment": False,
-                    "attachments": [],
-                    "comments_count": 0,
-                    "likes": [],
-                    "more_likes": 0,
-                    "my_change": True,
-                }
+                "user_id": 9457,
+                "text": "Тест",
+                "created_at": "2021-08-23T19:51:47.000Z",
+                "updated_at": "2021-08-23T19:51:47.000Z",
+                "post_id": 2835471,
+                "entries": {},
+                "realm": 0,
+                "external_id": None,
+                "id": 35866491
             },
             status=200,
         )
