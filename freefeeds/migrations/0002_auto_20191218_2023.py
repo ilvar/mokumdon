@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('freefeeds', '0001_initial'),
+        ("freefeeds", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='attachment',
-            name='post',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='freefeeds.Post'),
+            model_name="attachment",
+            name="post",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="freefeeds.Post",
+            ),
         ),
     ]

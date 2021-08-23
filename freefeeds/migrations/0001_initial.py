@@ -9,49 +9,89 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('feed_id', models.CharField(db_index=True, max_length=100)),
-                ('username', models.CharField(max_length=100)),
-                ('screen_name', models.CharField(max_length=100)),
-                ('avatar_url', models.URLField()),
-                ('created_at', models.DateTimeField()),
-                ('updated_at', models.DateTimeField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("feed_id", models.CharField(db_index=True, max_length=100)),
+                ("username", models.CharField(max_length=100)),
+                ("screen_name", models.CharField(max_length=100)),
+                ("avatar_url", models.URLField()),
+                ("created_at", models.DateTimeField()),
+                ("updated_at", models.DateTimeField()),
             ],
             bases=(models.Model, freefeeds.models.FfToMdConvertorMixin),
         ),
         migrations.CreateModel(
-            name='Post',
+            name="Post",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('feed_id', models.CharField(db_index=True, max_length=100)),
-                ('body', models.TextField()),
-                ('comment_likes', models.IntegerField()),
-                ('comments_disabled', models.BooleanField()),
-                ('created_at', models.DateTimeField()),
-                ('updated_at', models.DateTimeField()),
-                ('parent', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='freefeeds.Post')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='freefeeds.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("feed_id", models.CharField(db_index=True, max_length=100)),
+                ("body", models.TextField()),
+                ("comment_likes", models.IntegerField()),
+                ("comments_disabled", models.BooleanField()),
+                ("created_at", models.DateTimeField()),
+                ("updated_at", models.DateTimeField()),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="freefeeds.Post",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="freefeeds.User"
+                    ),
+                ),
             ],
             bases=(models.Model, freefeeds.models.FfToMdConvertorMixin),
         ),
         migrations.CreateModel(
-            name='Attachment',
+            name="Attachment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('feed_id', models.CharField(db_index=True, max_length=100)),
-                ('media_type', models.CharField(max_length=100)),
-                ('url', models.CharField(max_length=256)),
-                ('thumbnail_url', models.CharField(max_length=256)),
-                ('width', models.IntegerField(null=True)),
-                ('height', models.IntegerField(null=True)),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='freefeeds.Post')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("feed_id", models.CharField(db_index=True, max_length=100)),
+                ("media_type", models.CharField(max_length=100)),
+                ("url", models.CharField(max_length=256)),
+                ("thumbnail_url", models.CharField(max_length=256)),
+                ("width", models.IntegerField(null=True)),
+                ("height", models.IntegerField(null=True)),
+                (
+                    "post",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="freefeeds.Post"
+                    ),
+                ),
             ],
             bases=(models.Model, freefeeds.models.FfToMdConvertorMixin),
         ),

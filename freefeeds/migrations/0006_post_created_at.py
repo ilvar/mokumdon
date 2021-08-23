@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('freefeeds', '0005_auto_20191222_1241'),
+        ("freefeeds", "0005_auto_20191222_1241"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='post',
-            name='created_at',
+            model_name="post",
+            name="created_at",
             field=models.DateTimeField(null=True),
         ),
     ]

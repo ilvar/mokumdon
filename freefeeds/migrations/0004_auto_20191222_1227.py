@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('freefeeds', '0003_auto_20191222_1227'),
+        ("freefeeds", "0003_auto_20191222_1227"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='post',
-            name='comments',
+            model_name="post",
+            name="comments",
             field=models.IntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='post',
-            name='likes',
+            model_name="post",
+            name="likes",
             field=models.IntegerField(default=0),
         ),
     ]

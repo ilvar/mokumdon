@@ -9,7 +9,6 @@ from freefeeds.models import User, Post, Attachment
 class Client:
     app_key = None
 
-
     HOST = "https://mokum.place"
     HOME_URL = HOST + "/index.json"
     USER_FEED_URL = HOST + "/%s.json"
@@ -28,22 +27,22 @@ class Client:
         if not app_key:
             raise RuntimeError("App key is invalid")
         self.app_key = app_key
-        
+
     @staticmethod
     def from_request(request):
         return Client(request.META["HTTP_AUTHORIZATION"].replace("Bearer ", ""))
-        
+
     def get_headers(self):
-        return {
-          "X-API-Token": self.app_key
-        }
-    
+        return {"X-API-Token": self.app_key}
+
     def request(self, url, method="GET", data=None, **kwargs):
         if settings.DEBUG:
             print(method + ": " + url)
-        result = requests.request(method, url, headers=self.get_headers(), json=data, **kwargs).json()
+        result = requests.request(
+            method, url, headers=self.get_headers(), json=data, **kwargs
+        ).json()
         return result
-    
+
     def get_me(self):
         data = self.request(self.ME_URL)
         username = data["river"]["current_user_name"]
@@ -61,51 +60,69 @@ class Client:
                 max_created_at = None
         else:
             max_created_at = None
-    
+
         params = {}
         if max_created_at:
             params["start_from"] = max_created_at
         ff_data = self.request(url + "?" + urllib.parse.urlencode(params))
-        posts = [Post.from_feed_json(p, ff_data["users"].values()) for p in ff_data["entries"]]
-        
+        posts = [
+            Post.from_feed_json(p, ff_data["users"].values())
+            for p in ff_data["entries"]
+        ]
+
         return posts
-    
+
     def get_post(self, md_id):
         md_post = Post.objects.get(pk=md_id)
         url = self.POSTS_URL % (md_post.user.username, md_post.feed_id)
         ff_data = self.request(url)
         post = Post.from_feed_json(ff_data["entries"][0], ff_data["users"].values())
-        
-        comments = [Post.from_feed_comment_json(post, c, ff_data["users"].values()) for c in ff_data["entries"][0]["comments"]]
+
+        comments = [
+            Post.from_feed_comment_json(post, c, ff_data["users"].values())
+            for c in ff_data["entries"][0]["comments"]
+        ]
         return [post] + comments
-    
+
     def get_notifications(self):
         # TODO
         return []
-    
+
     def get_user_timeline(self, md_id, limit=120, max_id=None, since_id=None):
         md_user = User.objects.get(pk=md_id)
-        return self.get_feed(self.USER_FEED_URL % md_user.username, limit, max_id, since_id)
+        return self.get_feed(
+            self.USER_FEED_URL % md_user.username, limit, max_id, since_id
+        )
 
     def post_like(self, md_id):
         post = Post.objects.get(pk=md_id)
-    
+
         if post.parent is not None:
-            self.request(self.COMMENT_LIKE_URL % (post.user.username, post.feed_id, post.id), method="POST")
+            self.request(
+                self.COMMENT_LIKE_URL % (post.user.username, post.feed_id, post.id),
+                method="POST",
+            )
             comments = self.get_post(post.parent_id)[1:]
             comment = [p for p in comments if p.id == md_id][0]
             return comment
         else:
-            self.request(self.POST_LIKE_URL % (post.user.username, post.feed_id), method="POST")
+            self.request(
+                self.POST_LIKE_URL % (post.user.username, post.feed_id), method="POST"
+            )
             return self.get_post(md_id)[0]
 
     def post_unlike(self, md_id):
         post = Post.objects.get(pk=md_id)
-    
+
         if post.parent is not None:
-            self.request(self.COMMENT_LIKE_URL % (post.user.username, post.feed_id, post.id), method="DELETE")
+            self.request(
+                self.COMMENT_LIKE_URL % (post.user.username, post.feed_id, post.id),
+                method="DELETE",
+            )
         else:
-            self.request(self.POST_LIKE_URL % (post.user.username, post.feed_id), method="DELETE")
+            self.request(
+                self.POST_LIKE_URL % (post.user.username, post.feed_id), method="DELETE"
+            )
         return self.get_post(md_id)[0]
 
     def _get_post_from_response(self, response, user_id):
@@ -121,41 +138,62 @@ class Client:
         reply_id = md_data.get("in_reply_to_id", None)
         if reply_id is not None:
             post = Post.objects.get(pk=reply_id)
-            
+
             if post.parent:
                 postId = post.parent.feed_id
-                username  = post.parent.user.username
+                username = post.parent.user.username
             else:
                 postId = post.feed_id
-                username  = post.user.username
-                
+                username = post.user.username
+
+            media_ids = [
+                Attachment.objects.get(pk=aid).feed_id
+                for aid in md_data.getlist("media_ids[]")
+            ]
+
             feed_data = {
                 "comment": {
-                    "text": md_data["status"] or '.',
-                    "attachment_id": [Attachment.objects.get(pk=aid).feed_id for aid in md_data.getlist("media_ids[]")][0],
+                    "text": md_data["status"] or ".",
+                    "attachment_id": media_ids and media_ids[0] or None,
                 }
             }
 
             user_id = self.get_me().feed_id
-            new_comment = self._get_post_from_response(self.request(self.NEW_COMMENT_URL % (username, postId), method="POST", data=feed_data), user_id)
-            new_md_post = Post.from_feed_comment_json(post, new_comment["post"], [{"id": user_id}])
+            new_comment = self._get_post_from_response(
+                self.request(
+                    self.NEW_COMMENT_URL % (username, postId),
+                    method="POST",
+                    data=feed_data,
+                ),
+                user_id,
+            )
+            new_md_post = Post.from_feed_comment_json(
+                post, new_comment["post"], [{"id": user_id}]
+            )
         else:
             feed_data = {
                 "post": {
-                    "text": md_data["status"] or '.',
-                    "attachment_ids": [Attachment.objects.get(pk=aid).feed_id for aid in md_data.getlist("media_ids[]")],
+                    "text": md_data["status"] or ".",
+                    "attachment_ids": [
+                        Attachment.objects.get(pk=aid).feed_id
+                        for aid in md_data.getlist("media_ids[]")
+                    ],
                     "linebreaks": True,
                     "timelines": ["user"],
                     "comments_disabled": False,
                 }
             }
-    
+
             user_id = self.get_me().feed_id
-            new_post = self._get_post_from_response(self.request(self.NEW_POST_URL, method="POST", data=feed_data), user_id)
+            new_post = self._get_post_from_response(
+                self.request(self.NEW_POST_URL, method="POST", data=feed_data), user_id
+            )
             new_md_post = Post.from_feed_json(new_post["post"], [{"id": user_id}])
-        
+
         return new_md_post
-    
+
     def new_attachment(self, md_file):
-        result = self.request(self.NEW_ATTACHMENT_URL, method="POST", files={"file": md_file})
-        return Attachment.from_feed_json(None, result['attachments'])
+        result = self.request(
+            self.NEW_ATTACHMENT_URL, method="POST", files={"file": md_file}
+        )
+        return Attachment.from_feed_json(None, result["attachments"])

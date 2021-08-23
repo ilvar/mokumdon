@@ -6,7 +6,7 @@ from freefeeds.client import Client
 
 class AuthForm(forms.Form):
     api_key = forms.CharField(required=True)
-    
+
     def clean(self):
         cleaned_data = super().clean()
 
@@ -15,8 +15,15 @@ class AuthForm(forms.Form):
             if api_client.get_me() is not None:
                 return cleaned_data
             else:
-                self.add_error('api_key', "Looks like the token is invalid, please check it and try again")
+                self.add_error(
+                    "api_key",
+                    "Looks like the token is invalid, please check it and try again",
+                )
         except Exception as e:
             if settings.DEBUG:
                 raise e
-            self.add_error('api_key', "Looks like the token is invalid, please check it and try again. %s" % e)
+            self.add_error(
+                "api_key",
+                "Looks like the token is invalid, please check it and try again. %s"
+                % e,
+            )
