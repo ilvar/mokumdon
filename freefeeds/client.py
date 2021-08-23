@@ -160,10 +160,10 @@ class Client:
 
             user_id = self.get_me().feed_id
             response = self.request(
-                    self.NEW_COMMENT_URL % (username, postId),
-                    method="POST",
-                    data=feed_data,
-                )
+                self.NEW_COMMENT_URL % (username, postId),
+                method="POST",
+                data=feed_data,
+            )
             new_comment = self._get_post_from_response(
                 {"post": response},
                 user_id,

@@ -86,7 +86,7 @@ class PostTestCase(TestCase):
                 "entries": {},
                 "realm": 0,
                 "external_id": None,
-                "id": 35866491
+                "id": 35866491,
             },
             status=200,
         )
