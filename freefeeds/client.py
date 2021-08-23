@@ -19,7 +19,7 @@ class Client:
     NEW_COMMENT_URL = HOST + "/api/v1/posts/%s/%s/comments.json"
     NEW_ATTACHMENT_URL = HOST + "/v1/attachments"
 
-    ME_URL = HOST + "/index.json"
+    ME_URL = HOST + "/user.json"
 
     POST_LIKE_URL = HOST + "/api/v1/posts/%s/%s/likes.json"
     COMMENT_LIKE_URL = HOST + "/api/v1/posts/%s/%s/clike/%s.json"
@@ -45,7 +45,7 @@ class Client:
         return result
     
     def get_me(self):
-        data = self.request(self.HOME_URL)
+        data = self.request(self.ME_URL)
         username = data["river"]["current_user_name"]
         user_data = [u for u in data["users"].values() if u["name"] == username][0]
         return User.from_feed_json(user_data)
@@ -108,6 +108,9 @@ class Client:
             self.request(self.POST_LIKE_URL % (post.user.username, post.feed_id), method="DELETE")
         return self.get_post(md_id)[0]
 
+    def _get_post_from_create_response(self, response):
+        return list(response["entries"].values())[0]
+
     def new_post_or_comment(self, md_data):
         reply_id = md_data.get("in_reply_to_id", None)
         if reply_id is not None:
@@ -127,8 +130,10 @@ class Client:
                 }
             }
 
-            new_comment = self.request(self.NEW_COMMENT_URL % (username, postId), method="POST", data=feed_data)["entries"].values().next()
-            new_md_post = Post.from_feed_comment_json(post, new_comment["post"], [self.get_me().feed_id])
+            new_comment = self._get_post_from_create_response(self.request(self.NEW_COMMENT_URL % (username, postId), method="POST", data=feed_data))
+            user_id = self.get_me().feed_id
+            new_comment["post"]["user_id"] = user_id
+            new_md_post = Post.from_feed_comment_json(post, new_comment["post"], [{"id": user_id}])
         else:
             feed_data = {
                 "post": {
@@ -140,8 +145,10 @@ class Client:
                 }
             }
     
-            new_post = self.request(self.NEW_POST_URL, method="POST", data=feed_data)["entries"].values().next()
-            new_md_post = Post.from_feed_json(new_post["post"], [self.get_me().feed_id])
+            new_post = self._get_post_from_create_response(self.request(self.NEW_POST_URL, method="POST", data=feed_data))
+            user_id = self.get_me().feed_id
+            new_post["post"]["user_id"] = user_id
+            new_md_post = Post.from_feed_json(new_post["post"], [{"id": user_id}])
         
         return new_md_post
     
