@@ -114,6 +114,7 @@ class Client:
         response["post"].setdefault("attachments", [])
         response["post"].setdefault("more_likes", 0)
         response["post"].setdefault("comments_count", 0)
+        response["post"].setdefault("can_comment", 0)
         return response
 
     def new_post_or_comment(self, md_data):
