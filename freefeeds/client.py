@@ -1,3 +1,4 @@
+import time
 import urllib.parse
 
 import requests
@@ -164,7 +165,7 @@ class Client:
             feed_data = {
                 "comment": {
                     "text": md_data["status"] or ".",
-                    "attachment_id": media_ids and media_ids[0] or None,
+                    "attachment_ids": media_ids and media_ids[0] or None,
                 }
             }
 
@@ -206,4 +207,16 @@ class Client:
         result = self.request(
             self.NEW_ATTACHMENT_URL, method="POST", files={"attachment[attachment][]": md_file}
         )
+        uploaded = False
+        i = 0
+        while not uploaded and i < 10:
+            statuses = self.request(self.NEW_ATTACHMENT_URL, method="GET")
+            if len(statuses["attachments_queued"]) == 0:
+                uploaded = True
+            else:
+                i += 1
+                time.sleep(0.5)
+        if i == 10:
+            raise Exception("Could not upload file")
+        
         return Attachment.from_feed_json(None, result["attachments"][0])
