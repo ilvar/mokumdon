@@ -183,12 +183,10 @@ class Client:
                 post, new_comment["post"], [{"id": user_id}]
             )
         else:
-            print(md_data.getlist("media_ids[]"))
             att_ids = [
                 int(Attachment.objects.get(pk=aid).feed_id)
                 for aid in md_data.getlist("media_ids[]")
             ]
-            print(att_ids)
             feed_data = {
                 "post": {
                     "text": md_data["status"] or ".",
