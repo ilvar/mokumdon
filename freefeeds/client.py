@@ -38,10 +38,16 @@ class Client:
     def request(self, url, method="GET", data=None, **kwargs):
         if settings.DEBUG:
             print(method + ": " + url)
-        result = requests.request(
-            method, url, headers=self.get_headers(), json=data, **kwargs
-        ).json()
-        return result
+        try:
+            result = requests.request(
+                method, url, headers=self.get_headers(), json=data, **kwargs
+            ).json()
+            return result
+        except Exception as e:
+            print(e)
+            print(method + ": " + url)
+            print(data)
+            raise e
 
     def get_me(self):
         data = self.request(self.ME_URL)
