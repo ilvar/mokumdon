@@ -215,8 +215,11 @@ class Client:
                 uploaded = True
             else:
                 i += 1
-                time.sleep(0.5)
+                time.sleep(0.2)
         if i == 10:
             raise Exception("Could not upload file")
-        
+
+        time.sleep(0.2)
+        print(result)
+
         return Attachment.from_feed_json(None, result["attachments"][0])
