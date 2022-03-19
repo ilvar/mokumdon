@@ -16,7 +16,7 @@ class Client:
 
     NEW_POST_URL = HOST + "/api/v1/posts.json"
     NEW_COMMENT_URL = HOST + "/api/v1/posts/%s/%s/comments.json"
-    NEW_ATTACHMENT_URL = HOST + "/v1/attachments"
+    NEW_ATTACHMENT_URL = HOST + "/v1/attachments.json"
 
     ME_URL = HOST + "/user.json"
 
@@ -204,6 +204,6 @@ class Client:
 
     def new_attachment(self, md_file):
         result = self.request(
-            self.NEW_ATTACHMENT_URL, method="POST", files={"file": md_file}
+            self.NEW_ATTACHMENT_URL, method="POST", files={"attachment[attachment][]": md_file}
         )
         return Attachment.from_feed_json(None, result["attachments"])
