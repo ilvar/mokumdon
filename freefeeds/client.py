@@ -16,7 +16,7 @@ class Client:
 
     NEW_POST_URL = HOST + "/api/v1/posts.json"
     NEW_COMMENT_URL = HOST + "/api/v1/posts/%s/%s/comments.json"
-    NEW_ATTACHMENT_URL = HOST + "/v1/attachments.json"
+    NEW_ATTACHMENT_URL = HOST + "/api/v1/attachments.json"
 
     ME_URL = HOST + "/user.json"
 
