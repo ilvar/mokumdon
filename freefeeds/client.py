@@ -206,4 +206,4 @@ class Client:
         result = self.request(
             self.NEW_ATTACHMENT_URL, method="POST", files={"attachment[attachment][]": md_file}
         )
-        return Attachment.from_feed_json(None, result["attachments"])
+        return Attachment.from_feed_json(None, result["attachments"][0])
