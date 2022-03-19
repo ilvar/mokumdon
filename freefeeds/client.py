@@ -184,13 +184,15 @@ class Client:
             )
         else:
             print(md_data.getlist("media_ids[]"))
+            att_ids = [
+                int(Attachment.objects.get(pk=aid).feed_id)
+                for aid in md_data.getlist("media_ids[]")
+            ]
+            print(att_ids)
             feed_data = {
                 "post": {
                     "text": md_data["status"] or ".",
-                    "attachment_ids": [
-                        Attachment.objects.get(pk=aid).feed_id
-                        for aid in md_data.getlist("media_ids[]")
-                    ],
+                    "attachment_ids": att_ids,
                     "linebreaks": True,
                     "timelines": ["user"],
                     "comments_disabled": False,
