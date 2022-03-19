@@ -183,6 +183,7 @@ class Client:
                 post, new_comment["post"], [{"id": user_id}]
             )
         else:
+            print(md_data.getlist("media_ids[]"))
             feed_data = {
                 "post": {
                     "text": md_data["status"] or ".",
@@ -218,8 +219,6 @@ class Client:
                 time.sleep(0.2)
         if i == 10:
             raise Exception("Could not upload file")
-
-        time.sleep(0.2)
-        print(result)
+        print(result["attachments"][0])
 
         return Attachment.from_feed_json(None, result["attachments"][0])
