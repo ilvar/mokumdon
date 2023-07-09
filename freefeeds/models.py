@@ -1,3 +1,5 @@
+import re
+
 import arrow
 from django.db import models
 
@@ -186,12 +188,16 @@ class Attachment(models.Model, FfToMdConvertorMixin):
         return {
             "id": self.pk,
             "type": self.data["media_type"],
-            "url": self.data["url"],
-            "remote_url": self.data["url"],
-            "preview_url": self.data["thumbnail_url"],
+            "url": self.media_url(self.data["url"]),
+            "remote_url": self.media_url(self.data["url"]),
+            "preview_url": self.media_url(self.data["thumbnail_url"]),
             "text_url": "",
             "meta": (self.data["width"] and self.data["height"])
             and {"width": self.data["width"], "height": self.data["height"]}
             or {},
             "description": "",
         }
+
+    def media_url(self, mokum_url):
+        redirect_url = re.sub("^https://mokum.place/", "/media/", mokum_url)
+        return redirect_url

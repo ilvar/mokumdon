@@ -1,6 +1,12 @@
 import json
+import re
+from http.client import HTTPResponse
+from urllib.request import urlopen
 
+import requests as requests
 from django.http import HttpResponse
+from requests.exceptions import ChunkedEncodingError
+from urllib3.exceptions import IncompleteRead
 
 from freefeeds.client import Client
 
@@ -134,3 +140,24 @@ def direct_messages(request):
 
 def saved_searches(request):
     return HttpResponse(json.dumps([]), content_type="application/json")
+
+
+def patch_http_response_read(func):
+    def inner(args):
+        try:
+            return func(args)
+        except IncompleteRead as e:
+            return e.partial
+    return inner
+
+HTTPResponse.read = patch_http_response_read(HTTPResponse.read)
+
+def media_redirect(request, path):
+    url = "https://mokum.place/" + path.strip("/")
+    print(url)
+    response = urlopen(url)
+    status_code = response.status
+    headers = dict(response.headers.items())
+    data = response.read()
+
+    return HttpResponse(data, status=status_code, headers=headers)
