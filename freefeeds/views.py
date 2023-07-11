@@ -1,3 +1,4 @@
+import io
 import json
 import re
 from http.client import HTTPResponse
@@ -153,11 +154,14 @@ def patch_http_response_read(func):
 HTTPResponse.read = patch_http_response_read(HTTPResponse.read)
 
 def media_redirect(request, path):
-    url = "https://mokum.place/" + path.strip("/")
+    from PIL import Image
+    url = re.sub("^media/", "https://mokum.place/", path.strip("/"))
     print(url)
-    response = urlopen(url)
-    status_code = response.status
+    response = requests.get(url, stream=True)
+    status_code = response.status_code
     headers = dict(response.headers.items())
-    data = response.read()
-
-    return HttpResponse(data, status=status_code, headers=headers)
+    data = io.BytesIO(response.content)
+    img = Image.open(data)
+    response = HttpResponse(status=status_code, content_type="image/png")
+    img.save(response, format="png")
+    return response
