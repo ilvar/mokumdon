@@ -1,13 +1,10 @@
 import io
 import json
-import re
-from http.client import HTTPResponse
-from urllib.request import urlopen
 
 import requests as requests
-from django.http import HttpResponse
+from PIL import ImageFile
+from django.http import HttpResponse, HttpResponseServerError
 from requests.exceptions import ChunkedEncodingError
-from urllib3.exceptions import IncompleteRead
 
 from freefeeds.client import Client
 
@@ -143,25 +140,34 @@ def saved_searches(request):
     return HttpResponse(json.dumps([]), content_type="application/json")
 
 
-def patch_http_response_read(func):
-    def inner(args):
-        try:
-            return func(args)
-        except IncompleteRead as e:
-            return e.partial
-    return inner
-
-HTTPResponse.read = patch_http_response_read(HTTPResponse.read)
-
 def media_redirect(request, path):
     from PIL import Image
-    url = re.sub("^media/", "https://mokum.place/", path.strip("/"))
+    requests.models.CONTENT_CHUNK_SIZE = 1 * 1024 * 1024
+
+    url = "https://mokum.place/" + path.strip("/")
     print(url)
-    response = requests.get(url, stream=True)
-    status_code = response.status_code
-    headers = dict(response.headers.items())
-    data = io.BytesIO(response.content)
-    img = Image.open(data)
-    response = HttpResponse(status=status_code, content_type="image/png")
-    img.save(response, format="png")
-    return response
+
+    result = HttpResponseServerError()
+
+    with io.BytesIO() as handle:
+        response = requests.get(url, stream=True)
+
+        if response.ok:
+            try:
+                for block in response.iter_content(1024):
+                    if not block:
+                        break
+                    handle.write(block)
+            except ChunkedEncodingError as e:
+                pass
+
+            status_code = response.status_code
+            handle.seek(0)
+            ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+            img = Image.open(handle)
+
+            result = HttpResponse(status=status_code, content_type="image/png")
+            img.save(result, format="png")
+    return result
+

@@ -199,5 +199,5 @@ class Attachment(models.Model, FfToMdConvertorMixin):
         }
 
     def media_url(self, mokum_url):
-        redirect_url = re.sub("^https://mokum.place/", "/media/", mokum_url)
+        redirect_url = re.sub("^https://mokum.place/", "https://mokumdon.rkd.pw/media/", mokum_url)
         return redirect_url
